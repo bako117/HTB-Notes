@@ -16,7 +16,7 @@ There are 3 key event logs:
 
 ## Useful Event Logs
 
-Here is a no comprehensive list of windows event logs. I bolded the ones that seems most important to me. 
+Here is a no comprehensive list of windows event logs. I bolded the ones that seems most important to me.
 
 ### System
 
@@ -78,11 +78,11 @@ Here is a no comprehensive list of windows event logs. I bolded the ones that se
 
 
 
-Windows Event Logs are persistent, disk-based logs used for auditing and investigations, while ETW is a real-time, high-performance tracing framework that provides deeper and more granular telemetry. Event Logs are easier to use and widely ingested into SIEMs, whereas ETW is typically leveraged by EDR tools for advanced behavioral detection and low-level system visibility. 
+Windows Event Logs are persistent, disk-based logs used for auditing and investigations, while ETW is a real-time, high-performance tracing framework that provides deeper and more granular telemetry. Event Logs are easier to use and widely ingested into SIEMs, whereas ETW is typically leveraged by EDR tools for advanced behavioral detection and low-level system visibility.
 
 
 
-You can use built in logman.exe to assist in viewing ETW information. 
+You can use built in logman.exe to assist in viewing ETW information.
 
 
 
@@ -125,28 +125,20 @@ https://github.com/SwiftOnSecurity/sysmon-config
 
 ## Get-WinEvent
 
-In IR and threat hunting scenarios, using powershell to analyze win event logs en masse is a great resource. 
+In IR and threat hunting scenarios, using powershell to analyze win event logs en masse is a great resource.
 
-To view log sources run: 
-` Get-WinEvent -ListLog \* | Select-Object LogName, RecordCount, IsClassicLog, IsEnabled, LogMode, LogType | Format-Table -AutoSize `
+To view log sources run:
+`Get-WinEvent -ListLog \\\* | Select-Object LogName, RecordCount, IsClassicLog, IsEnabled, LogMode, LogType | Format-Table -AutoSize`
 
 
 
-To retrieve the top 50 system logs run: 
+To retrieve the top 50 system logs run:
 
 `Get-WinEvent -LogName 'System' -MaxEvents 50 | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize`
 
-To use logs files from a different device .evt or .evtx files you can specifiy a path: 
+To use logs files from a different device .evt or .evtx files you can specifiy a path:
 
-`Get-WinEvent -Path 'C:\\Tools\\chainsaw\\EVTX-ATTACK-SAMPLES\\Execution\\exec\_sysmon\_1\_lolbin\_pcalua.evtx' -MaxEvents 5 | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize` 
-
-
-
-
-
-
-
-
+`Get-WinEvent -Path 'C:\\\\Tools\\\\chainsaw\\\\EVTX-ATTACK-SAMPLES\\\\Execution\\\\exec\\\_sysmon\\\_1\\\_lolbin\\\_pcalua.evtx' -MaxEvents 5 | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize`
 
 
 
