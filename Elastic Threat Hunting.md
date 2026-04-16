@@ -7,6 +7,7 @@
 Threat hunting is an active, human-led, and often hypothesis-driven practice that systematically combs through network data to identify stealthy, advanced threats that evade existing security solutions.
 
 
+
 ## Threat Hunting Process
 
 
@@ -28,20 +29,22 @@ Threat hunting is an active, human-led, and often hypothesis-driven practice tha
 ***Continuous learning*** - Each hunt should build off of and feed into the next
 
 
+
 ## Threat Hunting Glossary
 
-Here are some common terms in threat hunting and their exact definitions: 
+Here are some common terms in threat hunting and their exact definitions:
+
 
 
 ***Adversary*** - An entity driven to compromise your business to meet their own goals
 
 ***APT (Advanced Persistent Threat)*** - Highly organized groups or nation states that process extensive resources, a much stronger adversary than normal
 
-***TTPS:*** 
+***TTPS:***
 
 ***T - Tactics -*** Stategic objectives and high level concepts employed by adversaries, example: Exfiltration
 
-***T - Techniques -*** Specific methods utilized by an adversary to accomplish tactical objs, "how" 
+***T - Techniques -*** Specific methods utilized by an adversary to accomplish tactical objs, "how"
 
 ***P - procedures -*** Granular step by step instructions for doing a technique
 
@@ -55,7 +58,7 @@ Analyzing TTPs offers deep insights into how an adversary penetrates a network, 
 
 ***Indicator -*** An indicator, when analyzed in CTI, encompasses both technical data and contextual information. Data + Context = Indicator
 
-***Threat -*** A multifaceted concept, consisting of 3 fundamental factors. Intent - the driving rationale to compromise your business. Capability - The tools, resources, and financial backing adversaries have. Opportunity - conditions or events  which provide favorable circumstances for an adversary to operate against you. 
+***Threat -*** A multifaceted concept, consisting of 3 fundamental factors. Intent - the driving rationale to compromise your business. Capability - The tools, resources, and financial backing adversaries have. Opportunity - conditions or events  which provide favorable circumstances for an adversary to operate against you.
 
 
 
@@ -64,40 +67,40 @@ Analyzing TTPs offers deep insights into how an adversary penetrates a network, 
 ***Host Artifacts: On the other hand, host artifacts refer to remnants of malicious activity left on individual systems or endpoints.***
 
 
-Threat Intelligence Fundamentals
----
+
+## Threat Intelligence Fundamentals
 
 
 
-Cyber Threat Intelligence (CTI) represents a vital asset in our arsenal, providing essential insights to fortify our defenses against cyberattacks.They contribute crucial insights to our Security Operations Center (SOC).
+Cyber Threat Intelligence (CTI) represents a vital asset in our arsenal, providing essential insights to fortify our defenses against cyberattacks. They contribute crucial insights to our Security Operations Center (SOC).
 
 
 
-The four fundamental principles that make up CTI are: 
+The four fundamental principles that make up CTI are:
 
 
 
-***Relevance*** - Information passed on must be relevant. Passing on an exploit for a piece of software we don't have makes no sense.  
+***Relevance*** - Information passed on must be relevant. Passing on an exploit for a piece of software we don't have makes no sense.
 
 ***Timeliness -*** Quick comms of intelligence is key, aged indicators lose relevance
 
-***Actionability -*** Intelligence should be actionable. Unactionable intelligence is just un-productive. 
+***Actionability -*** Intelligence should be actionable. Unactionable intelligence is just un-productive.
 
-***Accuracy -*** Before sending out intelligence, it should be verified for accuracy. Any concern for accuracy should come witha labeled confidence indicator. 
-
-
-
-When all 4 come together, it creates additional insights into adversary operations, enrigches analyst data, uncovers adversary TTPs, and informs decision makers within our org
+***Accuracy -*** Before sending out intelligence, it should be verified for accuracy. Any concern for accuracy should come with a labeled confidence indicator.
 
 
 
-There are 3 types of intelligence, all three technically have slight overlap: 
+When all 4 come together, it creates additional insights into adversary operations, enriches analyst data, uncovers adversary TTPs, and informs decision makers within our org
+
+
+
+There are 3 types of intelligence, all three technically have slight overlap:
 
 ***Strategic:*** Consumed by C-suite executives, this intelligence helps drive bigger decision making initiatives
 
-***Operational:*** Provides mid-level information on adversarial campaigns. Answers how? and where? 
+***Operational:*** Provides mid-level information on adversarial campaigns. Answers how? and where?
 
-***Tactical:*** Technical very actionable intelligence containing IOC's for immediate action to be taken. 
+***Tactical:*** Technical very actionable intelligence containing IOC's for immediate action to be taken.
 
 ## 
 
