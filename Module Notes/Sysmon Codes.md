@@ -27,7 +27,7 @@ DLL loaded in events.
 # Event ID 9
 # Event ID 10 - Process Access
 Useful for generating when a memory dump or a remote code injection occurs. This event shows when a handle into another process has been created.
-# Event ID 11
+# Event ID 11 - File Creation
 # Event ID 12
 # Event ID 15
 # Event ID 
