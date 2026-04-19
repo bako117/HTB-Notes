@@ -197,8 +197,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "93709f996e7608d0",
+  "active": "1c6febb64f10619c",
   "lastOpenFiles": [
+    "CTF Notes/Completed/LogJammer.md",
+    "CTF Notes/Completed",
+    "CTF Notes",
     "Module Notes/Sysmon Codes.md",
     "Module Notes/Understanding Log Sources & Splunk.md",
     "Pasted image 20260417135500.png",
@@ -206,7 +209,6 @@
     "Module Notes/Network Analysis.md",
     "README.md",
     "Module Notes/Using Metasploit.md",
-    "CTF Notes",
     "Module Notes"
   ]
 }
