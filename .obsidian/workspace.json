@@ -1,28 +1,14 @@
 {
   "main": {
-    "id": "89899f6956dc3e48",
+    "id": "bacafe5d0114792c",
     "type": "split",
     "children": [
       {
-        "id": "70af5c672bb74086",
+        "id": "fae5707a56aebaf9",
         "type": "tabs",
         "children": [
           {
-            "id": "93709f996e7608d0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Module Notes/Sysmon Codes.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Sysmon Codes"
-            }
-          },
-          {
-            "id": "47421312fcc1e069",
+            "id": "e8da225c7728bda9",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -36,66 +22,48 @@
             }
           },
           {
-            "id": "519362678706ee98",
+            "id": "23c95c2bf7ea4994",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Module Notes/Sysmon Codes.md",
+                "file": "Module Notes/Windows Attacks & Defense.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Sysmon Codes"
-            }
-          },
-          {
-            "id": "5dcce94eb7d82a39",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Module Notes/JavaScript Deobfuscation.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "JavaScript Deobfuscation"
+              "title": "Windows Attacks & Defense"
             }
           }
         ],
-<<<<<<< HEAD
         "currentTab": 1
-=======
-        "currentTab": 2
->>>>>>> ab2b59bbe20c0b14356c4cd6c6a590723e9b06e7
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "5f4baae423496b2b",
+    "id": "bc3b0da992834257",
     "type": "split",
     "children": [
       {
-        "id": "cbb0fca254947c53",
+        "id": "1f88c3e5b13cae12",
         "type": "tabs",
         "children": [
           {
-            "id": "1c6febb64f10619c",
+            "id": "f68b9a0877468857",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": true
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
             }
           },
           {
-            "id": "4fc8f9e3f1e01b2d",
+            "id": "bb711bd1b03c1ec0",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -112,7 +80,7 @@
             }
           },
           {
-            "id": "62fe7f5f679153b6",
+            "id": "92796aebf71c65d8",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -128,20 +96,19 @@
     "width": 300
   },
   "right": {
-    "id": "3cf319db12582831",
+    "id": "98ca084425adb59e",
     "type": "split",
     "children": [
       {
-        "id": "456f0cb80fd2aadc",
+        "id": "4a6af914b814a93f",
         "type": "tabs",
         "children": [
           {
-            "id": "3df5189fc2103540",
+            "id": "097adff4b3508d3b",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,25 +118,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for README"
+              "title": "Backlinks"
             }
           },
           {
-            "id": "894e6471db8339f0",
+            "id": "57be505fb8553e0f",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from README"
+              "title": "Outgoing links"
             }
           },
           {
-            "id": "28ca7edcd2ab6e87",
+            "id": "40d0d3e77ed43d70",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -184,7 +150,7 @@
             }
           },
           {
-            "id": "9dbbdf5a1b4d7dd0",
+            "id": "1833cf852915f65a",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -198,18 +164,18 @@
             }
           },
           {
-            "id": "a9dcb3e22897d4c4",
+            "id": "964ea87aad47a76c",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "Untitled.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of README"
+              "title": "Outline of Untitled"
             }
           }
         ]
@@ -230,28 +196,14 @@
       "bases:Create new base": false
     }
   },
-  "active": "5dcce94eb7d82a39",
+  "active": "23c95c2bf7ea4994",
   "lastOpenFiles": [
-<<<<<<< HEAD
-    "Pasted image 20260419183155.png",
-    "Module Notes/Sysmon Codes.md",
     "CTF Notes/Completed/Meerkat.md",
-    "Module Notes/Understanding Log Sources & Splunk.md",
-    "Module Notes/Using Metasploit.md",
+    "Module Notes/Windows Attacks & Defense.md",
+    "2026-04-22.md",
+    "Untitled",
     "Ideas-General Notes-Links.md",
-    "Module Notes/WindowsEventLogs.md",
     "Images",
-=======
-    "Module Notes/WindowsEventLogs.md",
-    "Module Notes/JavaScript Deobfuscation.md",
->>>>>>> ab2b59bbe20c0b14356c4cd6c6a590723e9b06e7
-    "CTF Notes/Completed/LogJammer.md",
-    "CTF Notes/Completed",
-    "CTF Notes",
-    "Pasted image 20260417135500.png",
-    "Module Notes/Elastic Threat Hunting.md",
-    "Module Notes/Network Analysis.md",
-    "README.md",
-    "Module Notes"
+    "Module Notes/Elastic Threat Hunting.md"
   ]
 }
