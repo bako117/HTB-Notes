@@ -42,10 +42,66 @@ Additionally GMSA accounts are really helpful. They are service account tied to 
 3. Utilize a **honeypot*** user to identify if someone is breaking in
 
 
+# AS-REProasting
 
+The `AS-REProasting` attack is similar to the `Kerberoasting` attack; we can obtain crackable hashes for user accounts that have the property `Do not require Kerberos preauthentication`, enabled.
 
+Using `Rubeus` with the asreproast action will find the hashes for each user account that has this property. 
 
+Then we will use `hashcat` to break the hahses again. For `hashcat` to be able to recognize the hash, we need to edit it by adding `23$` after `$krb5asrep$`
 
+## Prevention
+
+This attack is only successful when a weak user password is combined with ``Do not require Kerberos preauthentication`` property. To prevent this we should limit the amount of accounts that have this property, accounts that do require it should be reviewed at least quarterly. Accounts that require this should also have passwords at least 20 characters long to thwart cracking attempts.
+
+## Detection
+
+We can detect this type of behavior by looking at event code 4768, signaling that a kerberos authentication ticket has been generated. However, the amount of these are so ridiculously high that we would only want to search for a field for preauthentication type and set it equal to 0. Additionally we would want to look for weaker encryption algorithms that Rubeus defaults to, like RC4. 
+
+Honeypot users are another good example of a way we can detect this type of attack. 
+
+# GPP Passwords
+
+`SYSVOL` is a network share on all Domain Controllers, it contains logon scripts, group policy data, and other required domain wide data.
+
+AD stores all of its group policies in `\\<DOMAIN>\SYSVOL\<DOMAIN>\Policies\` in 2008, lol obama. Group Policy Preferences (GPP) was released. You could store credentials within this volume for use later on. 
+
+During engagements, we might encounter scheduled tasks and scripts executed under a particular user and contain the username and an encrypted version of the password in XML policy files. The encryption key that AD uses to encrypt the XML policy files (the `same` for all Active Directory environments) was released on Microsoft Docs, allowing anyone to decrypt credentials stored in the policy files. Anyone can decrypt the credentials because the `SYSVOL` folder is accessible to all 'Authenticated Users' in the domain, which includes users and computers. Microsoft published the [AES private key on MSDN](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gppref/2c15cbf0-f086-4c74-8b70-1f2fa45dd4be?redirectedfrom=MSDN):
+
+![[Pasted image 20260505211636.png]]
+
+To abuse `GPP Passwords`, we will use the [Get-GPPPassword](https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1) function from `PowerSploit`, which automatically parses all XML files in the Policies folder in `SYSVOL`, picking up those with the `cpassword` property and decrypting them once detected:
+
+## Prevention
+Once the encryption key was made public and started to become abused, Microsoft released a patch (`KB2962486)` in 2014 to prevent `caching credentials` in GPP. Therefore, GPP should no longer store passwords in new patched environments. However, older passwords are still cached within the environment. 
+
+## Detection
+
+there are two methods for detecting this attack
+
+1. If we are auditing file access, create a dummy XML file with a cpassword inside it, then any tool that tries to read it is likely very suspicious. Like a honeypot xml file to detect on. 
+2. Create a honey pot user or look for authentications for the user's with these credentials stored if necessary. 
+
+## Lab 
+
+```PS
+Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+```
+
+# GPO Permissions/GPO Files
+
+A [Group Policy Object (GPO)](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/policy/group-policy-objects) is a virtual collection of policy settings that has a unique name like a GUID. Each GPO contains a collection of zero or more policy settings.
+
+They are linked to OU's in the AD environmaent to apply setting to objects that reside in the OU.  GPOs can be restricted to which objects they apply by specifying, for example, an AD group (by default, it applies to Authenticated Users) or a WMI filter (e.g., apply only to Windows 10 machines).
+
+When we create a new GPO, only Domain admins (and similar privileged roles) can modify it. However, within environments, we will encounter different delegations that allow less privileged accounts to perform edits on the GPOs; this is where the problem lies.
+
+If a compromised user account can edit a GPO, then they can maliciously edit the GPO to run a file or startup script on every host within the vulnerable GPO. 
+
+If a user can reach specific network shares, a file replacement could derail a benign GPO into running a malicious file. 
+
+## Prevention
+To prevent this kind of behavior, we need top lock down who can actually edit and create GPO's as much as possible. It is easy to detect a modified GPO, if the activity is unexpected than we know it could be bad. From a defensive point of view, if a user who is `not` expected to have the right to modify a GPO suddenly appears here, then a red flag should be raised.
 
 
 
