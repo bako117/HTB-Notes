@@ -104,4 +104,37 @@ If a user can reach specific network shares, a file replacement could derail a b
 To prevent this kind of behavior, we need top lock down who can actually edit and create GPO's as much as possible. It is easy to detect a modified GPO, if the activity is unexpected than we know it could be bad. From a defensive point of view, if a user who is `not` expected to have the right to modify a GPO suddenly appears here, then a red flag should be raised.
 
 
+# Credentials In Shares
+
+Credentials can lie exposed in Network shares and be a pivot point for attackers after initial access. Creds often lie in these typs of files:
+- Batch (.bat)
+- CMD
+- PowerShell (.ps1)
+- .conf
+- .ini
+- config files
+
+It is the equivalent of leaving a .txt file on your machine with passwords or a post-it on your screen, but worse. To attack this, first we use powerview's `Invoke-ShareFinder` function. It will allow us to find shares our user account has access to. By removing the $c and $ipc share, 
+
+```powershell-session
+PS C:\Users\bob\Downloads> Invoke-ShareFinder -domain eagle.local -ExcludeStandard -CheckShareAccess
+```
+
+Now we navigate to our desired share and us e the `findstr` function to sift through the share. 
+
+```powershell-session
+PS Microsoft.PowerShell.Core\FileSystem::\\Server01.eagle.local\dev$> findstr /m /s /i "pass" *.bat
+```
+
+`.bat`, `.cmd`, `.ps1`, `.conf`, `.config`, and `.ini` are the file types we want. 
+
+- `/s` forces to search the current directory and all subdirectories
+- `/i` ignores case in the search term
+- `/m` shows only the filename for a file that matches the term
+
+Search terms we might use are things like "pw" "pass" NETBIOS domain name, 
+
+To prevent this, we should lock down file shares as much as possible. Additionally, we should analyze user behavior to determine if this is normal. 
+
+Another detection technique is discovering the `one-to-many` connections, for example, when `Invoke-ShareFinder` scans every domain device to obtain a list of its network shares. It would be abnormal for a workstation to connect to 100s or even 1000s of other devices simultaneously.
 
