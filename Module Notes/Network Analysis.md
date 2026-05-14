@@ -1,4 +1,3 @@
-# Network Analysis
 
 ## Wireshark
 Wireshark is a critical piece of tooling for analyzing network traffic files, known as pcaps. 
@@ -27,8 +26,10 @@ Just type in the protocol, ex include
 - udp 
 - dns
 
-### Decrpyting RDP Lab
+Network traffic analysis can be difficult due to how much traffic there is and how foreign it can be. Being able to identify attacks and discern patterns and trends within the data is crucial. 
 
-First get the key neccessary. This is a process not covered in the lab. 
+# Link Layer Attacks
+
+
 
 

@@ -48,9 +48,23 @@
               "icon": "lucide-file",
               "title": "Windows Attacks & Defense"
             }
+          },
+          {
+            "id": "a1b55e3a5382ee21",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Module Notes/Network Analysis.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Network Analysis"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -210,11 +224,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "4fa2c960d822deb2",
+  "active": "a1b55e3a5382ee21",
   "lastOpenFiles": [
+    "Module Notes/Sysmon Codes.md",
+    "Module Notes/Network Traffic Analysis.md",
+    "Module Notes/Network Analysis.md",
+    "Module Notes/Windows Attacks & Defense.md",
+    "Images/Pasted image 20260510204018.png",
     "CheatSheets/cheatsheat-Windows Attacks & Defense.md",
     "CheatSheets",
-    "Module Notes/Windows Attacks & Defense.md",
     "Images/Pasted image 20260505211636.png",
     "Detection Logic.md",
     "Module Notes/WindowsEventLogs.md",

